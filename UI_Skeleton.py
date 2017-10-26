@@ -30,6 +30,8 @@ Populationlocation = pygame.Rect(0,440,300,400)
 Time = 0
 ActiveTime = True
 font = pygame.font.SysFont('Consolas', 30)
+Population = 125125
+RedCirc = (300,200), 38
 
 
 clock = pygame.time.Clock()
@@ -42,7 +44,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     """ circles represent classes for now"""
-    pygame.draw.circle(screen, RED, (300,200),38)
+    pygame.draw.circle(screen, RED, (300,200), 38)
     pygame.draw.circle(screen, (0,255,0), (150,250),36)
     pygame.draw.circle(screen, (0,0,255), (200,350),30)
     """ Black box will be sending you to upgrade screen"""
@@ -53,6 +55,7 @@ while running:
     pygame.draw.rect(screen, (0,0,0), Populationlocation)
     """timer display"""
     screen.blit(font.render(str(pygame.time.get_ticks()/1000), True, (255, 255, 255)), (400, 0))
+    screen.blit(font.render(str(Population), True, (255, 255, 255)), (0, 440))
 
     pygame.display.update()
 
@@ -67,6 +70,8 @@ while running:
                         ActiveTime = False
                     else:
                         ActiveTime = True
-
+            if RedCirc.collidepoint(pygame.mouse.get_pos()):
+                if pygame.time.get_ticks() > (Time + 1000):
+                    Population = 12345
                 """ Compare last time clicked"""
 pygame.quit()
