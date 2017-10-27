@@ -16,7 +16,7 @@ frames_per_sec = 30
 Input Handling
     pygame.event.wait() : sit and block further game execution until an events comes along
     pygame.event.poll() : will see whether there are any events wating for processing
-    pygame.evnet.get() : returns all of the currently-outstanding events
+    pygame.event.get() : returns all of the currently-outstanding events
 """
 
 playtime = 0

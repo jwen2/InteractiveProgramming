@@ -33,10 +33,7 @@ font = pygame.font.SysFont('Consolas', 30)
 Population = 125125
 RedCirc = (300,200), 38
 
-
 clock = pygame.time.Clock()
-
-
 
 running = True
 while running:
@@ -64,14 +61,9 @@ while running:
             if UpgradeMenu.collidepoint(pygame.mouse.get_pos()):
                 if pygame.time.get_ticks() > (Time + 1000):
                     Time = pygame.time.get_ticks()
-                    if ActiveTime == True:
-                        pygame.time.wait(2000)
-                        Time - 1001
-                        ActiveTime = False
-                    else:
-                        ActiveTime = True
-            if RedCirc.collidepoint(pygame.mouse.get_pos()):
-                if pygame.time.get_ticks() > (Time + 1000):
-                    Population = 12345
+                    screen.fill(255,0,0)
+            # if RedCirc.collidepoint(pygame.mouse.get_pos()):
+            #     if pygame.time.get_ticks() > (Time + 1000):
+            #         Population = 12345
                 """ Compare last time clicked"""
 pygame.quit()
