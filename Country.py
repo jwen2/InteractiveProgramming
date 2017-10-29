@@ -43,7 +43,7 @@ class Country:
             if self.infected_pop > 10:
                 death_pop = int(self.infected_pop*(random.random()/10))
             else:
-                if self.infected_pop >= 1:
+                if self.max_pop >= 1:
                     death_pop = 1
                 else:
                     death_pop = 0
