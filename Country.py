@@ -133,7 +133,7 @@ country2 = Country(500, 180, 200, radius=40, color=BLUE)
 country3 = Country(320, 360, 200, radius=50, color=GREEN)
 countries = [country1, country2, country3]
 country_pop_index = country1
-
+total_pop = 0
 
 Time = 0
 Upgrade_Point = 0
@@ -156,14 +156,18 @@ while running:  # forever -- until user clicks in close box
                     country_pop_index = country
                         #print(country.infected_pop)
 
+
     """
     now our pathogen embarks on infection!
     type: step, death, propagation
 
     Modify Time + XXXX to modify the speed of the game.
     """
-    if pygame.time.get_ticks() > (Time + 100):
+    if pygame.time.get_ticks() > (Time + 10):
         Time = pygame.time.get_ticks()
+        if all(country.max_pop == 0 for country in countries) == True:
+            running = False
+            endscreen = True
         #print ('For each country: (infected ratio, total population)', (country1.infected_ratio(),country1.max_pop), (country2.infected_ratio(),country2.max_pop), (country3.infected_ratio(),country3.max_pop))
         Total_infected = 0
         for country in countries:
@@ -188,5 +192,29 @@ while running:  # forever -- until user clicks in close box
     """
     screen.blit(font.render('Infected:%.2d'%(country_pop_index.infected_pop) + ' ' +'Dead:%.2d'%(country_pop_index.dead_pop) + ' '+ 'Alive:%.2d'%(country_pop_index.max_pop) , True, (0, 255, 255)), (0, 440))
     pygame.display.update()  # updates real screen from staged screen
+
+
+
+
+while endscreen:
+    screen.fill(background_color)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                pygame.quit()
+                quit()
+
+
+    text = basicfont.render('Congradulations you have killed everyone! Press Q to end the game.', True, (0, 0, 0), (255, 255, 255))
+    textrect = text.get_rect()
+    textrect.centerx = screen.get_rect().centerx
+    textrect.centery = screen.get_rect().centery
+    screen.blit(text, textrect)
+
+    pygame.display.update()
 
 pygame.quit()
