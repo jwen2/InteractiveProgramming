@@ -78,6 +78,39 @@ class Country:
                 other.infected_pop = 1
 
 
+background_color = (255,255,255)
+width, height = 640, 480
+
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption('Plague Simulation')
+screen.fill(background_color)
+
+intro = True
+
+while intro:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c:
+                intro = False
+                running = True
+            if event.key == pygame.K_q:
+                pygame.quit()
+                quit()
+
+
+    basicfont = pygame.font.SysFont(None, 20)
+    text = basicfont.render('Welcome To A Plague Simulation! Press C to Start, Click on a country to start your infection', True, (0, 0, 0), (255, 255, 255))
+    textrect = text.get_rect()
+    textrect.centerx = screen.get_rect().centerx
+    textrect.centery = screen.get_rect().centery
+    screen.blit(text, textrect)
+
+    pygame.display.update()
 
 screen = pygame.display.set_mode((640, 480))
 
@@ -94,6 +127,8 @@ infectionindex = 1
 """ This is the counter to allow you to
 click on a country and place a pathogen"""
 clock = pygame.time.Clock()
+
+
 
 running = True
 while running:  # forever -- until user clicks in close box
