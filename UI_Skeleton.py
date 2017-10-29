@@ -5,17 +5,23 @@ Time runs in milliseconds, (1000 = 1 second)
 import pygame
 import os
 
-class powerupbox(object):
-    def __init__(self, x0, x1, y0, y1):
-        self.x0 = x0
-        self.x1 = x1
-        self.y0 = y0
-        self.y1 = y1
+
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+BLUE = (0, 255, 0)
+
+class Country():
+    def __init__(self, pop_infected = 0, x, y, radius, color = RED):
+        self.pop_infected = pop_infected
+        self.location = (x, y)
+        self.radius = radius
+        self.color = color
+
+
 
 pygame.init()
 
 background_color = (255,255,255)
-RED = (255,0,0)
 width, height = 640, 480
 
 """Bunch of variables"""
@@ -61,7 +67,7 @@ while running:
             if UpgradeMenu.collidepoint(pygame.mouse.get_pos()):
                 if pygame.time.get_ticks() > (Time + 1000):
                     Time = pygame.time.get_ticks()
-                    screen.fill(255,0,0)
+
             # if RedCirc.collidepoint(pygame.mouse.get_pos()):
             #     if pygame.time.get_ticks() > (Time + 1000):
             #         Population = 12345

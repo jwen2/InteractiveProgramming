@@ -9,6 +9,7 @@ BLUE = (0, 0, 255)
 
 
 pygame.init()
+font = pygame.font.SysFont('Consolas', 20)
 
 class Country:
     """
@@ -85,8 +86,13 @@ country1 = Country(200, 120, 200, radius=60)
 country2 = Country(500, 180, 200, radius=40, color=BLUE)
 country3 = Country(320, 360, 200, radius=50, color=GREEN)
 countries = [country1, country2, country3]
+country_pop_index = country1
+
 
 Time = 0
+infectionindex = 1
+""" This is the counter to allow you to
+click on a country and place a pathogen"""
 clock = pygame.time.Clock()
 
 running = True
@@ -95,15 +101,19 @@ while running:  # forever -- until user clicks in close box
         if event.type == pygame.MOUSEBUTTONDOWN:
             for country in countries:
                 if country.contains_pt(pygame.mouse.get_pos()):
-                    if country.infected_pop == 0:
+                    if infectionindex == 1:
                         country.infected_pop = country.infected_pop + 1
-                        print(country.infected_pop)
+                        infectionindex = infectionindex - 1
+                    country_pop_index = country
+                        #print(country.infected_pop)
 
     """
-    now our pathogen embaks on infection!
+    now our pathogen embarks on infection!
     type: step, death, propagation
+
+    Modify Time + XXXX to modify the speed of the game.
     """
-    if pygame.time.get_ticks() > (Time + 1000):
+    if pygame.time.get_ticks() > (Time + 100):
         Time = pygame.time.get_ticks()
         print ('For each country: (infected ratio, total population)', (country1.infected_ratio(),country1.max_pop), (country2.infected_ratio(),country2.max_pop), (country3.infected_ratio(),country3.max_pop))
 
@@ -122,6 +132,7 @@ while running:  # forever -- until user clicks in close box
     for country in countries:
         country.draw()
 
+    screen.blit(font.render('Infected Population:%.2d'%(country_pop_index.infected_pop) + ' ' + 'Total Pop:%.2d'%(country_pop_index.max_pop) , True, (0, 255, 255)), (0, 440))
     pygame.display.update()  # updates real screen from staged screen
 
 pygame.quit()
