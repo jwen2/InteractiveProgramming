@@ -1,6 +1,7 @@
 import os
 import pygame
 import random
+import math
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -135,6 +136,7 @@ country_pop_index = country1
 
 
 Time = 0
+Upgrade_Point = 0
 infectionindex = 1
 """ This is the counter to allow you to
 click on a country and place a pathogen"""
@@ -162,15 +164,17 @@ while running:  # forever -- until user clicks in close box
     """
     if pygame.time.get_ticks() > (Time + 100):
         Time = pygame.time.get_ticks()
-        print ('For each country: (infected ratio, total population)', (country1.infected_ratio(),country1.max_pop), (country2.infected_ratio(),country2.max_pop), (country3.infected_ratio(),country3.max_pop))
-
+        #print ('For each country: (infected ratio, total population)', (country1.infected_ratio(),country1.max_pop), (country2.infected_ratio(),country2.max_pop), (country3.infected_ratio(),country3.max_pop))
+        Total_infected = 0
         for country in countries:
             country.step()
             country.death()
-
+            Total_infected += (country.infected_pop + country.dead_pop)
             for other in countries:
                 if country != other:
                     country.propagation(other)
+        Upgrade_Point = int(math.pow(1.02,Total_infected)-1)
+        print (Upgrade_Point)
 
         if event.type == pygame.QUIT:
             running = False
