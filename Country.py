@@ -16,7 +16,7 @@ class Country:
     Each country has its maximum population without any inflected people,
     before we do click the country in the beginning of game.
     """
-    def __init__(self, x, y, max_pop, radius=50, color=RED, infected_pop=0, infected_rate=1.1):
+    def __init__(self, x, y, max_pop, radius=50, color=RED, infected_pop=0, infected_rate=1.1, dead_pop = 0):
         self.initial_pos = (x, y)
         self.x = x
         self.y = y
@@ -25,20 +25,32 @@ class Country:
         self.infected_pop = infected_pop
         self.infected_rate = infected_rate
         self.max_pop = max_pop
+        self.dead_pop = dead_pop
 
     def infected_ratio(self):
-        return int(self.infected_pop) / self.max_pop
-
+        if self.max_pop != 0:
+            return int(self.infected_pop) / self.max_pop
+        else:
+            return 1
     def death(self):
         """
         A part of infected population would be passed away.
         Then the infected population and maximum population will be reduced as many as the number of people death.
         """
         death_pop = 0
-        if self.infected_ratio() > 0.05:
-            death_pop = int(self.infected_pop*(random.random()/5))
+        alive_pop = self.max_pop
+        if self.infected_ratio() > 0.10:
+            if self.infected_pop > 10:
+                death_pop = int(self.infected_pop*(random.random()/10))
+            else:
+                if self.infected_pop >= 1:
+                    death_pop = 1
+                else:
+                    death_pop = 0
+
         self.infected_pop = self.infected_pop - death_pop
-        self.max_pop = self.max_pop - death_pop
+        self.max_pop -= death_pop
+        self.dead_pop += death_pop
 
     def step(self):
         """
@@ -167,7 +179,10 @@ while running:  # forever -- until user clicks in close box
     for country in countries:
         country.draw()
 
-    screen.blit(font.render('Infected Population:%.2d'%(country_pop_index.infected_pop) + ' ' + 'Total Pop:%.2d'%(country_pop_index.max_pop) , True, (0, 255, 255)), (0, 440))
+    """
+    the number of infected, dead, and total population is displayed whenever we click certain country
+    """
+    screen.blit(font.render('Infected:%.2d'%(country_pop_index.infected_pop) + ' ' +'Dead:%.2d'%(country_pop_index.dead_pop) + ' '+ 'Alive:%.2d'%(country_pop_index.max_pop) , True, (0, 255, 255)), (0, 440))
     pygame.display.update()  # updates real screen from staged screen
 
 pygame.quit()
