@@ -142,7 +142,12 @@ infectionindex = 1
 click on a country and place a pathogen"""
 clock = pygame.time.Clock()
 
+upgrades = 0
+rate = 1.0
+abilities = 1.0
+symptoms = 1.0
 
+death_rate = 1
 
 running = True
 while running:  # forever -- until user clicks in close box
@@ -154,8 +159,26 @@ while running:  # forever -- until user clicks in close box
                         country.infected_pop = country.infected_pop + 1
                         infectionindex = infectionindex - 1
                     country_pop_index = country
-                        #print(country.infected_pop)
-
+                    #print(country.infected_pop)
+        if event.type == pygame.KEYDOWN:
+            #If upgrade infection rate
+            if event.key == pygame.K_t:
+                upgrades = upgrades + 1
+                for country in countries:
+                    country.infected_rate = country.infected_rate * 1.15
+                    print (country.infected_rate)
+            #if upgrade death_rate
+            if event.key == pygame.K_s:
+                upgrades = upgrades + 1
+                for country in countries:
+                    country.death_rate = country.death_rate * 1.15
+                    print (country.death_rate)
+                symptoms += 0.15
+            if event.key == pygame.K_a:
+                upgrades = upgrades + 1
+                for country in countries:
+                    country.infected_rate = country.infected_rate * 1.15
+                    print (country.infected_rate)
 
     """
     now our pathogen embarks on infection!
@@ -163,7 +186,7 @@ while running:  # forever -- until user clicks in close box
 
     Modify Time + XXXX to modify the speed of the game.
     """
-    if pygame.time.get_ticks() > (Time + 10):
+    if pygame.time.get_ticks() > (Time + 100):
         Time = pygame.time.get_ticks()
         if all(country.max_pop == 0 for country in countries) == True:
             running = False
