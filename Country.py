@@ -1,7 +1,6 @@
 import os
 import pygame
 import random
-import math
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -14,10 +13,10 @@ font = pygame.font.SysFont('Consolas', 20)
 
 class Country:
     """
-    Each country has its maximum population without any inflected people,
+    Each country has its maximum population without any infected people,
     before we do click the country in the beginning of game.
     """
-    def __init__(self, x, y, max_pop, radius=50, color=RED, infected_pop=0, infected_rate=1.1, dead_pop = 0):
+    def __init__(self, x, y, max_pop, radius=50, color=RED, infected_pop=0, infected_rate=1.1, dead_pop=0, death_rate=1):
         self.initial_pos = (x, y)
         self.x = x
         self.y = y
@@ -147,8 +146,6 @@ rate = 1.0
 abilities = 1.0
 symptoms = 1.0
 
-death_rate = 1
-
 running = True
 while running:  # forever -- until user clicks in close box
     for event in pygame.event.get():
@@ -159,7 +156,8 @@ while running:  # forever -- until user clicks in close box
                         country.infected_pop = country.infected_pop + 1
                         infectionindex = infectionindex - 1
                     country_pop_index = country
-                    #print(country.infected_pop)
+        """now our pathogen embarks on infection!"""
+
         if event.type == pygame.KEYDOWN:
             #If upgrade infection rate
             if event.key == pygame.K_t:
@@ -180,12 +178,7 @@ while running:  # forever -- until user clicks in close box
                     country.infected_rate = country.infected_rate * 1.15
                     print (country.infected_rate)
 
-    """
-    now our pathogen embarks on infection!
-    type: step, death, propagation
-
-    Modify Time + XXXX to modify the speed of the game.
-    """
+    """Modify Time + XXXX to modify the speed of the game."""
     if pygame.time.get_ticks() > (Time + 100):
         Time = pygame.time.get_ticks()
         if all(country.max_pop == 0 for country in countries) == True:
@@ -193,15 +186,20 @@ while running:  # forever -- until user clicks in close box
             endscreen = True
         #print ('For each country: (infected ratio, total population)', (country1.infected_ratio(),country1.max_pop), (country2.infected_ratio(),country2.max_pop), (country3.infected_ratio(),country3.max_pop))
         Total_infected = 0
+
+        """
+        Infection types: step, death, propagation
+        Upgrade Point is given at every step.
+        """
         for country in countries:
             country.step()
             country.death()
             Total_infected += (country.infected_pop + country.dead_pop)
+            if infectionindex == 0:
+                Upgrade_Point += random.randint(1,3)
             for other in countries:
                 if country != other:
                     country.propagation(other)
-        Upgrade_Point = int(math.pow(1.02,Total_infected)-1)
-        print (Upgrade_Point)
 
         if event.type == pygame.QUIT:
             running = False
@@ -213,10 +211,8 @@ while running:  # forever -- until user clicks in close box
     """
     the number of infected, dead, and total population is displayed whenever we click certain country
     """
-    screen.blit(font.render('Infected:%.2d'%(country_pop_index.infected_pop) + ' ' +'Dead:%.2d'%(country_pop_index.dead_pop) + ' '+ 'Alive:%.2d'%(country_pop_index.max_pop) , True, (0, 255, 255)), (0, 440))
+    screen.blit(font.render('Infected:%.2d'%(country_pop_index.infected_pop) + ' ' +'Dead:%.2d'%(country_pop_index.dead_pop) + ' '+ 'Alive:%.2d'%(country_pop_index.max_pop) +'        '+'Upgrade Point:%.2d'%(Upgrade_Point) , True, (0, 255, 255)), (0, 440))
     pygame.display.update()  # updates real screen from staged screen
-
-
 
 
 while endscreen:
