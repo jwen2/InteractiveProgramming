@@ -17,6 +17,10 @@ class Country:
     before we click the country in the beginning of the game.
     """
     def __init__(self, x, y, max_pop, radius=50, color=RED, infected_pop=0, infected_rate=1.1, dead_pop=0, death_rate=1, airborne_rate=0):
+        """
+        Position and color of each country are defined.
+        Population(Infected, death, toal), and Rate(Infection, death, airborne) are defined.
+        """
         self.initial_pos = (x, y)
         self.x = x
         self.y = y
@@ -30,6 +34,9 @@ class Country:
         self.airborne_rate = airborne_rate
 
     def infected_ratio(self):
+        """
+        The ratio of infection (population of infected people / toal population of a country)
+        """
         if self.max_pop != 0:
             return int(self.infected_pop) / self.max_pop
         else:
