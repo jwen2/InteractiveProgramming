@@ -73,10 +73,13 @@ class Country:
 
 
     def draw(self):
+        """ draws the location of the country as a circle """
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)),
                            self.radius)
 
     def contains_pt(self, pt):
+        """ countains points function to see if mouseclicks are
+        within the circles of the country """
         x, y = pt
         if not self.x - self.radius < x < self.x + self.radius:
             return False
@@ -103,12 +106,13 @@ screen.fill(background_color)
 intro = True
 
 while intro:
+    """ Intro of the game gives the intro screen with
+    upgrade instructions as well as how to start the game """
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
-
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_c:
                 intro = False
@@ -116,7 +120,8 @@ while intro:
             if event.key == pygame.K_q:
                 pygame.quit()
                 quit()
-
+    """ Renders the text where it tells the user to
+    press c to start the game, and gives instructions on how to upgrade the game"""
 
     basicfont = pygame.font.SysFont(None, 20)
     text = basicfont.render('Welcome To A Plague Simulation! Press C to Start, Click on a country to start your infection', True, (0, 0, 0), (255, 255, 255))
@@ -124,6 +129,7 @@ while intro:
     textrect.centerx = screen.get_rect().centerx
     textrect.centery = screen.get_rect().centery
     screen.blit(text, textrect)
+    screen.blit(basicfont.render('For Upgrades, Press I to increase infection rate, K to increase kill rate, and A to increase airborne rate' , True, (0, 0, 0), (255, 255, 255)), (0, 300 ))
 
     pygame.display.update()
 
@@ -138,6 +144,7 @@ country_pop_index = country1
 total_pop = 0
 
 Time = 0
+time = 0
 Upgrade_Point = 0
 infectionindex = 1
 """ This is the counter to allow you to
@@ -146,11 +153,16 @@ clock = pygame.time.Clock()
 
 upgrades = 0
 
+""" Pressing C will officially start the game running our
+game function with time"""
+
 running = True
 while running:  # forever -- until user clicks in close box
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             for country in countries:
+                """ start of the game, clicking the first country
+                will place the first pathogen in the country """
                 if country.contains_pt(pygame.mouse.get_pos()):
                     if infectionindex == 1:
                         country.infected_pop = country.infected_pop + 1
@@ -158,29 +170,36 @@ while running:  # forever -- until user clicks in close box
                     country_pop_index = country
         """now our pathogen embarks on infection!"""
 
+        """Upgrade functions that cost more and more as upgrades increase"""
         if event.type == pygame.KEYDOWN:
             #Upgrade infection rate
-            if event.key == pygame.K_t:
-                upgrades = upgrades + 1
-                for country in countries:
-                    country.infected_rate = country.infected_rate * 1.15
+            if event.key == pygame.K_i:
+                if Upgrade_Point > upgrades**2:
+                    for country in countries:
+                        country.infected_rate = country.infected_rate * 1.15
+                    Upgrade_Point = Upgrade_Point - upgrades**2
+                    upgrades = upgrades + 1
                     print (country.infected_rate)
 
-            #increase death rate
-            if event.key == pygame.K_s:
-                upgrades = upgrades + 1
-                for country in countries:
-                    country.death_rate = country.death_rate * 1.15
+            #increase kill rate
+            if event.key == pygame.K_k:
+                if Upgrade_Point > upgrades**2:
+                    for country in countries:
+                        country.death_rate = country.death_rate * 1.15
+                    Upgrade_Point = Upgrade_Point - upgrades**2
+                    upgrades = upgrades + 1
                     print (country.death_rate)
             #increase airborne capacity
             if event.key == pygame.K_a:
-                upgrades = upgrades + 1
-                for country in countries:
-                    country.airborne_rate = country.airborne_rate + 0.15
+                if Upgrade_Point > upgrades**2:
+                    for country in countries:
+                        country.airborne_rate = country.airborne_rate + 0.15
+                    Upgrade_Point = Upgrade_Point - upgrades**2
+                    upgrades = upgrades + 1
                     print (country.airborne_rate)
 
     """Modify Time + XXXX to modify the speed of the game."""
-    if pygame.time.get_ticks() > (Time + 100):
+    if pygame.time.get_ticks() > (Time + 1000):
         Time = pygame.time.get_ticks()
         if all(country.max_pop == 0 for country in countries) == True:
             running = False
@@ -198,7 +217,9 @@ while running:  # forever -- until user clicks in close box
             Total_infected += (country.infected_pop + country.dead_pop)
             if infectionindex == 0:
                 if country.max_pop !=0:
-                    Upgrade_Point += random.randint(1,3)
+                    if pygame.time.get_ticks() > (time + 2000):
+                        time = pygame.time.get_ticks()
+                        Upgrade_Point += random.randint(1,3)
             for other in countries:
                 if country != other:
                     country.propagation(other)
@@ -214,6 +235,7 @@ while running:  # forever -- until user clicks in close box
     the number of infected, dead, and total population is displayed whenever we click certain country
     """
     screen.blit(font.render('Infected:%.2d'%(country_pop_index.infected_pop) + ' ' +'Dead:%.2d'%(country_pop_index.dead_pop) + ' '+ 'Alive:%.2d'%(country_pop_index.max_pop) +'        '+'Upgrade Point:%.2d'%(Upgrade_Point) , True, (0, 255, 255)), (0, 440))
+    screen.blit(font.render('Current Upgrades:%.2d'%(upgrades), True, (0, 255, 255)), (400, 400))
     pygame.display.update()  # updates real screen from staged screen
 
 
