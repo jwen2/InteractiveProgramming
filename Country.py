@@ -26,6 +26,7 @@ class Country:
         self.infected_rate = infected_rate
         self.max_pop = max_pop
         self.dead_pop = dead_pop
+        self.death_rate = death_rate
 
     def infected_ratio(self):
         if self.max_pop != 0:
@@ -41,7 +42,7 @@ class Country:
         alive_pop = self.max_pop
         if self.infected_ratio() > 0.10:
             if self.infected_pop > 10:
-                death_pop = int(self.infected_pop*(random.random()/10))
+                death_pop = int(self.death_rate*self.infected_pop*(random.random()/15))
             else:
                 if self.max_pop >= 1:
                     death_pop = 1
@@ -66,7 +67,7 @@ class Country:
         # return int(self.infected_pop)
 
         """return probability"""
-        return self.infected_ratio()*1.00
+        return self.infected_ratio()
 
 
     def draw(self):
@@ -196,7 +197,8 @@ while running:  # forever -- until user clicks in close box
             country.death()
             Total_infected += (country.infected_pop + country.dead_pop)
             if infectionindex == 0:
-                Upgrade_Point += random.randint(1,3)
+                if country.max_pop !=0:
+                    Upgrade_Point += random.randint(1,3)
             for other in countries:
                 if country != other:
                     country.propagation(other)
