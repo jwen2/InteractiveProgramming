@@ -14,9 +14,9 @@ font = pygame.font.SysFont('Consolas', 20)
 class Country:
     """
     Each country has its maximum population without any infected people,
-    before we do click the country in the beginning of game.
+    before we click the country in the beginning of the game.
     """
-    def __init__(self, x, y, max_pop, radius=50, color=RED, infected_pop=0, infected_rate=1.1, dead_pop=0, death_rate=1):
+    def __init__(self, x, y, max_pop, radius=50, color=RED, infected_pop=0, infected_rate=1.1, dead_pop=0, death_rate=1, airborne_rate=0):
         self.initial_pos = (x, y)
         self.x = x
         self.y = y
@@ -27,15 +27,17 @@ class Country:
         self.max_pop = max_pop
         self.dead_pop = dead_pop
         self.death_rate = death_rate
+        self.airborne_rate = airborne_rate
 
     def infected_ratio(self):
         if self.max_pop != 0:
             return int(self.infected_pop) / self.max_pop
         else:
             return 1
+
     def death(self):
         """
-        A part of infected population would be passed away.
+        A part of the infected population would be passed away.
         Then the infected population and maximum population will be reduced as many as the number of people death.
         """
         death_pop = 0
@@ -143,9 +145,6 @@ click on a country and place a pathogen"""
 clock = pygame.time.Clock()
 
 upgrades = 0
-rate = 1.0
-abilities = 1.0
-symptoms = 1.0
 
 running = True
 while running:  # forever -- until user clicks in close box
@@ -160,24 +159,25 @@ while running:  # forever -- until user clicks in close box
         """now our pathogen embarks on infection!"""
 
         if event.type == pygame.KEYDOWN:
-            #If upgrade infection rate
+            #Upgrade infection rate
             if event.key == pygame.K_t:
                 upgrades = upgrades + 1
                 for country in countries:
                     country.infected_rate = country.infected_rate * 1.15
                     print (country.infected_rate)
-            #if upgrade death_rate
+
+            #increase death rate
             if event.key == pygame.K_s:
                 upgrades = upgrades + 1
                 for country in countries:
                     country.death_rate = country.death_rate * 1.15
                     print (country.death_rate)
-                symptoms += 0.15
+            #increase airborne capacity
             if event.key == pygame.K_a:
                 upgrades = upgrades + 1
                 for country in countries:
-                    country.infected_rate = country.infected_rate * 1.15
-                    print (country.infected_rate)
+                    country.airborne_rate = country.airborne_rate + 0.15
+                    print (country.airborne_rate)
 
     """Modify Time + XXXX to modify the speed of the game."""
     if pygame.time.get_ticks() > (Time + 100):
