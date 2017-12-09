@@ -11,6 +11,20 @@ BLUE = (0, 0, 255)
 pygame.init()
 font = pygame.font.SysFont('Consolas', 20)
 
+class Doctor:
+    """
+    Doctor begins to work on a cure after a certain amount of upgrades
+    or after time has elapsed for a certain time
+    """
+    def __init__(self, timer=120, rate=1, percent=0):
+        """ Timer is set for when the cure will be started
+        Rate is at what rate the cure is being develop
+        If cure.percent is 100 percent the game is over
+        """
+        self.timer = timer
+        self.rate = rate
+        self.percent = percent
+
 class Country:
     """
     Each country has its maximum population without any infected people,
@@ -44,15 +58,15 @@ class Country:
 
     def death(self):
         """
-        A part of the infected population would be passed away.
+        A part of the infected population would be killed.
         Then the infected population and maximum population will be reduced as many as the number of people death.
         """
         death_pop = 0
         alive_pop = self.max_pop
-        if self.infected_ratio() > 0.10:
-            if self.infected_pop > 10:
+        if self.infected_ratio() > 0.10:                   #ratios are arbitrarily selected
+            if self.infected_pop > 15:
                 death_pop = int(self.death_rate*self.infected_pop*(random.random()/15))
-            else:
+            else:                                          #once population hits below 15, we no longer use a ratio
                 if self.max_pop >= 1:
                     death_pop = 1
                 else:
@@ -66,6 +80,8 @@ class Country:
         """
         If infection starts (infect_pop changed into unity),
         then the infection starts with the certain rate
+
+        When infected population is at max pop, the infection rate stops.
         """
         if self.infected_pop < self.max_pop:
             self.infected_pop = self.infected_pop * self.infected_rate
@@ -102,7 +118,7 @@ class Country:
             if random.random() <= self.infected_ratio()/10:
                 other.infected_pop = 1
 
-
+"""Varibles for pygame display"""
 background_color = (255,255,255)
 width, height = 640, 480
 
@@ -142,7 +158,7 @@ while intro:
 
 screen = pygame.display.set_mode((640, 480))
 
-""" Herein, three countries are defined """
+""" Herein, three countries are defined as well as the doctor """
 country1 = Country(200, 120, 200, radius=60)
 country2 = Country(500, 180, 200, radius=40, color=BLUE)
 country3 = Country(320, 360, 200, radius=50, color=GREEN)
@@ -150,15 +166,17 @@ countries = [country1, country2, country3]
 country_pop_index = country1
 total_pop = 0
 
+doctor1 = Doctor()
+
 Time = 0
 time = 0
+upgrades = 0
 Upgrade_Point = 0
 infectionindex = 1
 """ This is the counter to allow you to
 click on a country and place a pathogen"""
 clock = pygame.time.Clock()
 
-upgrades = 0
 
 """ Pressing C will officially start the game running our
 game function with time"""
@@ -208,12 +226,23 @@ while running:  # forever -- until user clicks in close box
     """Modify Time + XXXX to modify the speed of the game."""
     if pygame.time.get_ticks() > (Time + 1000):
         Time = pygame.time.get_ticks()
+        """ If population == 0 then game is over"""
         if all(country.max_pop == 0 for country in countries) == True:
             running = False
             endscreen = True
         #print ('For each country: (infected ratio, total population)', (country1.infected_ratio(),country1.max_pop), (country2.infected_ratio(),country2.max_pop), (country3.infected_ratio(),country3.max_pop))
         Total_infected = 0
+        """
+        Doctor starts working if time is above a certain time or if upgrade counts
+        are more than 3
 
+        Once cure is started, the percent increments by the cure rate
+        """
+        if (upgrades > 3) or (pygame.time.get_ticks() > (doctor1.timer * 1000)):
+            doctor1.percent = doctor1.percent + (doctor1.rate)
+            if doctor1.percent == 100:
+                running = False
+                lose = True              #if doctor cure hits 100% lost screen is played
         """
         Infection types: step, death, propagation
         Upgrade Point is given at every step.
@@ -224,7 +253,7 @@ while running:  # forever -- until user clicks in close box
             Total_infected += (country.infected_pop + country.dead_pop)
             if infectionindex == 0:
                 if country.max_pop !=0:
-                    if pygame.time.get_ticks() > (time + 2000):
+                    if pygame.time.get_ticks() > (time + 4000):
                         time = pygame.time.get_ticks()
                         Upgrade_Point += random.randint(1,3)
             for other in countries:
@@ -243,9 +272,11 @@ while running:  # forever -- until user clicks in close box
     """
     screen.blit(font.render('Infected:%.2d'%(country_pop_index.infected_pop) + ' ' +'Dead:%.2d'%(country_pop_index.dead_pop) + ' '+ 'Alive:%.2d'%(country_pop_index.max_pop) +'        '+'Upgrade Point:%.2d'%(Upgrade_Point) , True, (0, 255, 255)), (0, 440))
     screen.blit(font.render('Current Upgrades:%.2d'%(upgrades), True, (0, 255, 255)), (400, 400))
+    screen.blit(font.render('Current Cure Percentage:%.2d'%(doctor1.percent), True, (0, 255, 255)), (0, 400))
     pygame.display.update()  # updates real screen from staged screen
 
-
+endscreen = False
+"""End screen when everyone is dead """
 while endscreen:
     screen.fill(background_color)
     for event in pygame.event.get():
@@ -260,6 +291,28 @@ while endscreen:
 
 
     text = basicfont.render('Congradulations you have killed everyone! Press Q to end the game.', True, (0, 0, 0), (255, 255, 255))
+    textrect = text.get_rect()
+    textrect.centerx = screen.get_rect().centerx
+    textrect.centery = screen.get_rect().centery
+    screen.blit(text, textrect)
+
+    pygame.display.update()
+
+"""Endscreen when the disease is cured"""
+while lose:
+    screen.fill(background_color)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                pygame.quit()
+                quit()
+
+
+    text = basicfont.render('The Doctor Has Cured Your Disease! Press Q to end the game.', True, (0, 0, 0), (255, 255, 255))
     textrect = text.get_rect()
     textrect.centerx = screen.get_rect().centerx
     textrect.centery = screen.get_rect().centery
